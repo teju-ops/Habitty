@@ -1,0 +1,6 @@
+{
+  "name": "Habitty",
+  "description": "A minimalist Python-based habit-tracking and productivity platform with streak tracking, analytics, and modular Flask architecture.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

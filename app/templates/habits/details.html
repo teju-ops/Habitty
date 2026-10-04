@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block title %}{{ habit.name }} — Habit Details{% endblock %}
+
+{% block content %}
+<section class="dashboard-header">
+    <div>
+        <h1 class="welcome-heading">{{ habit.name }}</h1>
+        <p class="habit-meta">
+            <span>Category: {{ habit.category }}</span>
+            <span aria-hidden="true">·</span>
+            <span>Frequency: {{ habit.frequency }}</span>
+            <span aria-hidden="true">·</span>
+            <span>Created: {{ habit.created_at.strftime('%Y-%m-%d') }}</span>
+        </p>
+        {% if habit.description %}
+            <p class="welcome-subtext">{{ habit.description }}</p>
+        {% endif %}
+    </div>
+    <div class="habit-secondary-actions">
+        <a href="{{ url_for('habits.edit', habit_id=habit.id) }}" class="btn btn-outline">Edit Habit</a>
+        <a href="{{ url_for('dashboard.index') }}" class="btn btn-outline">Back to Dashboard</a>
+    </div>
+</section>
+
+<section class="stats-grid" aria-label="Habit Analytics">
+    <div class="stat-card">
+        <span class="stat-label">Current Streak</span>
+        <strong class="stat-value tabular-nums">{{ stats.current_streak }} days</strong>
+    </div>
+    <div class="stat-card">
+        <span class="stat-label">Longest Streak</span>
+        <strong class="stat-value tabular-nums">{{ stats.longest_streak }} days</strong>
+    </div>
+    <div class="stat-card">
+        <span class="stat-label">Total Completions</span>
+        <strong class="stat-value tabular-nums">{{ stats.total_completions }}</strong>
+    </div>
+    <div class="stat-card">
+        <span class="stat-label">Completion Rate</span>
+        <strong class="stat-value tabular-nums">{{ stats.completion_rate }}%</strong>
+    </div>
+</section>
+
+<section class="calendar-section">
+    <div class="section-header">
+        <h2 class="section-title">{{ calendar_data.month_name }} {{ calendar_data.year }}</h2>
+        <span class="section-meta">Monthly completion history</span>
+    </div>
+
+    <div class="calendar-grid">
+        <div class="calendar-weekdays">
+            <span>Mon</span>
+            <span>Tue</span>
+            <span>Wed</span>
+            <span>Thu</span>
+            <span>Fri</span>
+            <span>Sat</span>
+            <span>Sun</span>
+        </div>
+        {% for week in calendar_data.weeks %}
+        <div class="calendar-week">
+            {% for cell in week %}
+            <div class="calendar-day {% if not cell.in_month %}day-outside{% elif cell.completed %}day-completed{% elif cell.missed %}day-missed{% endif %}">
+                <span class="day-number tabular-nums">{{ cell.day }}</span>
+                <span class="day-status">
+                    {% if cell.completed %}✓{% elif cell.missed %}✗{% endif %}
+                </span>
+            </div>
+            {% endfor %}
+        </div>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}

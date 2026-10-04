@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+{% block title %}Dashboard — Habitty{% endblock %}
+
+{% block content %}
+<section class="dashboard-header">
+    <div>
+        <h1 class="welcome-heading">{{ greeting }}, {{ current_user.username }} 👋</h1>
+        <p class="welcome-subtext">Let's build better habits today.</p>
+    </div>
+    <div>
+        <a href="{{ url_for('habits.create') }}" class="btn btn-primary">+ Create Habit</a>
+    </div>
+</section>
+
+<section class="stats-grid" aria-label="Dashboard Statistics">
+    <div class="stat-card">
+        <span class="stat-label">Total Habits</span>
+        <strong class="stat-value tabular-nums">{{ stats.total_habits }}</strong>
+    </div>
+    <div class="stat-card">
+        <span class="stat-label">Active Habits</span>
+        <strong class="stat-value tabular-nums">{{ stats.active_habits }}</strong>
+    </div>
+    <div class="stat-card">
+        <span class="stat-label">Completed Today</span>
+        <strong class="stat-value tabular-nums">{{ stats.completed_today }}/{{ stats.active_habits }}</strong>
+    </div>
+    <div class="stat-card">
+        <span class="stat-label">Current Best Streak</span>
+        <strong class="stat-value tabular-nums">{{ stats.best_streak }} days</strong>
+    </div>
+</section>
+
+<section class="chart-section">
+    <div class="section-header">
+        <h2 class="section-title">Weekly Habit Completion</h2>
+        <span class="section-meta">Last 7 days</span>
+    </div>
+    <div class="chart-card">
+        <canvas id="weeklyCompletionChart" height="90"></canvas>
+    </div>
+</section>
+
+<section class="habits-section">
+    <div class="section-header">
+        <h2 class="section-title">Your Habits</h2>
+        <span class="section-meta tabular-nums">{{ habit_cards|length }} total</span>
+    </div>
+
+    {% if habit_cards %}
+    <div class="habits-grid">
+        {% for item in habit_cards %}
+            {% set habit = item.habit %}
+            <article class="habit-card {% if item.completed_today %}habit-completed{% endif %}" data-habit-id="{{ habit.id }}">
+                <div class="habit-card-top">
+                    <div>
+                        <h3 class="habit-title">
+                            <a href="{{ url_for('habits.details', habit_id=habit.id) }}">{{ habit.name }}</a>
+                        </h3>
+                        <p class="habit-meta">
+                            <span>Category: {{ habit.category }}</span>
+                            <span aria-hidden="true">·</span>
+                            <span>Frequency: {{ habit.frequency }}</span>
+                            <span aria-hidden="true">·</span>
+                            <span class="tabular-nums">{{ item.current_streak }} day streak</span>
+                        </p>
+                    </div>
+                </div>
+
+                {% if habit.description %}
+                    <p class="habit-description">{{ habit.description }}</p>
+                {% endif %}
+
+                <div class="habit-actions">
+                    {% if item.completed_today %}
+                        <form method="POST" action="{{ url_for('habits.uncomplete', habit_id=habit.id) }}" class="inline-form">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                            <button type="submit" class="btn btn-success">✓ Completed Today</button>
+                        </form>
+                    {% else %}
+                        <form method="POST" action="{{ url_for('habits.complete', habit_id=habit.id) }}" class="inline-form">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                            <button type="submit" class="btn btn-primary">Mark Complete</button>
+                        </form>
+                    {% endif %}
+
+                    <div class="habit-secondary-actions">
+                        <a href="{{ url_for('habits.details', habit_id=habit.id) }}" class="btn btn-outline">Details</a>
+                        <a href="{{ url_for('habits.edit', habit_id=habit.id) }}" class="btn btn-outline">Edit</a>
+                        <form method="POST" action="{{ url_for('habits.delete', habit_id=habit.id) }}" class="inline-form" onsubmit="return confirm('Delete this habit and all completion history?');">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                            <button type="submit" class="btn btn-danger">Delete</button>
+                        </form>
+                    </div>
+                </div>
+            </article>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <h3>No habits created yet</h3>
+        <p>Start tracking your daily routines by creating your first habit.</p>
+        <a href="{{ url_for('habits.create') }}" class="btn btn-primary">Create First Habit</a>
+    </div>
+    {% endif %}
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    window.HABITTY_WEEKLY_DATA = {{ stats.weekly_chart | tojson }};
+</script>
+{% endblock %}

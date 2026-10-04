@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}500 Server Error — Habitty{% endblock %}
+
+{% block content %}
+<section class="error-page">
+    <h1 class="error-code tabular-nums">500</h1>
+    <h2 class="page-title">Something went wrong</h2>
+    <p class="page-subtitle">An unexpected server error occurred. Our database session has been safely rolled back.</p>
+    <a href="{{ url_for('dashboard.index') if current_user.is_authenticated else url_for('auth.login') }}" class="btn btn-primary">
+        Return Home
+    </a>
+</section>
+{% endblock %}

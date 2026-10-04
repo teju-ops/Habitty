@@ -1,0 +1,18 @@
+# Python / Flask
+.env
+__pycache__/
+*.pyc
+instance/
+.venv/
+venv/
+.pytest_cache/
+
+# Node / Build
+node_modules/
+build/
+dist/
+coverage/
+.DS_Store
+*.log
+.env*
+!.env.example

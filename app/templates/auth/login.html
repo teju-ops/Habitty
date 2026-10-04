@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}Login — Habitty{% endblock %}
+
+{% block content %}
+<section class="auth-card">
+    <h1 class="page-title">Welcome back</h1>
+    <p class="page-subtitle">Sign in to track your daily habits and streaks.</p>
+
+    <form method="POST" action="{{ url_for('auth.login') }}" class="form-stack">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+
+        <div class="form-group">
+            <label for="email">Email Address</label>
+            <input
+                type="email"
+                id="email"
+                name="email"
+                value="{{ email or '' }}"
+                placeholder="you@example.com"
+                required
+                autofocus
+            />
+        </div>
+
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input
+                type="password"
+                id="password"
+                name="password"
+                placeholder="Enter your password"
+                required
+            />
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block">Sign In</button>
+    </form>
+
+    <p class="auth-footer">
+        Don't have an account? <a href="{{ url_for('auth.register') }}">Create an account</a>
+    </p>
+</section>
+{% endblock %}
